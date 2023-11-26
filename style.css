@@ -29,6 +29,7 @@ body {
     align-items: center;
     justify-content: center;
     border-radius: 5px;
+    cursor: pointer;
 }
 
 .plus {
@@ -38,13 +39,18 @@ body {
     align-items: center;
     padding: 1rem;
     border: dotted 2px rgb(147, 147, 230);
-    cursor: pointer;
     color: rgb(147, 147, 230);
 }
 
 .text-add-box {
     color: rgb(147, 147, 230);
     padding-top: 1rem;
+}
+
+.notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .note-box {
@@ -88,7 +94,6 @@ body {
 .menu {
     color: rgb(83, 82, 82);
     background-color: #fff;
-    /* padding: 0.3rem; */
     font-size: 0.7rem;
     display: flex;
     flex-direction: column;
@@ -140,10 +145,16 @@ body {
     justify-content: center;
 }
 
-.popup,
-.popup-box {
+.popup-box,
+.popup {
     opacity: 0;
     pointer-events: none;
+}
+
+.popup-box.show,
+.popup-box.show .popup {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .content {
