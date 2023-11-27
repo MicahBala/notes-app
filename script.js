@@ -4,6 +4,7 @@ const btnClose = document.querySelector('.fa-x')
 const btnAdd = document.querySelector('.btn-add-note')
 const title = document.querySelector('#title')
 const desc = document.querySelector('#desc')
+const popupTitle = document.querySelector('.popup-title')
 
 const months = [
   'Jan',
@@ -24,8 +25,11 @@ let notes = localStorage.getItem('notes')
   ? JSON.parse(localStorage.getItem('notes'))
   : []
 
+let isUpdate = false
+let updateId
+
 addBox.addEventListener('click', () => {
-  console.log('clicked')
+  title.focus()
   popupBox.classList.add('show')
 })
 
@@ -33,6 +37,8 @@ btnClose.addEventListener('click', () => {
   popupBox.classList.remove('show')
   title.value = ''
   desc.value = ''
+  btnAdd.innerText = 'Add a new Note'
+  popupTitle.innerText = 'Add Note'
 })
 
 btnAdd.addEventListener('click', (e) => {
@@ -53,17 +59,50 @@ btnAdd.addEventListener('click', (e) => {
     date: `${month} ${day}, ${year}`,
   }
 
-  notes.push(noteContent)
+  if (!isUpdate) {
+    notes.push(noteContent)
+    isUpdate = false
+  } else {
+    notes[updateId] = noteContent
+    isUpdate = false
+  }
   localStorage.setItem('notes', JSON.stringify(notes))
 
   btnClose.click()
   showNotes()
 })
 
+function showMenu(elem) {
+  elem.parentElement.classList.add('show')
+  document.addEventListener('click', (e) => {
+    if (!elem.parentElement.contains(e.target) || e.target != elem) {
+      elem.parentElement.classList.remove('show')
+    }
+  })
+}
+
+function deleteNote(noteId) {
+  let deleteNote = confirm('Are you sure you want to delete this note?')
+  if (!deleteNote) return
+  notes.splice(noteId, 1)
+  localStorage.setItem('notes', JSON.stringify(notes))
+  showNotes()
+}
+
+function updateNote(noteId, noteTitle, noteDesc) {
+  isUpdate = true
+  updateId = noteId
+  addBox.click()
+  title.value = noteTitle
+  desc.value = noteDesc
+  btnAdd.innerText = 'Update Note'
+  popupTitle.innerText = 'Update Note'
+}
+
 function showNotes() {
   document.querySelectorAll('.note-box').forEach((note) => note.remove())
 
-  notes.forEach((note) => {
+  notes.forEach((note, index) => {
     const { title, desc, date } = note
     let noteCard = `
     <div class="note-box">
@@ -74,10 +113,10 @@ function showNotes() {
         <div class="footer-note-box">
             <div class="date-note-box">${date}</div>
             <div class="menu-note-box">
-                <div class="elipses">...</div>
+                <div class="elipses" onclick='showMenu(this)'>...</div>
                 <ul class="menu">
-                    <li><i class="fa-regular fa-pen-to-square"></i> Edit</li>
-                    <li><i class="fa-solid fa-trash-can"></i> Delete</li>
+                    <li onclick='updateNote("${index}","${title}", "${desc}")'><i class="fa-regular fa-pen-to-square"></i> Edit</li>
+                    <li onclick='deleteNote(${index})'><i class="fa-solid fa-trash-can"></i> Delete</li>
                 </ul>
             </div>
         </div>
